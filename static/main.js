@@ -208,9 +208,10 @@ spotifyButton.onclick = () => {
 };
 
 document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll("button, a, input[type='submit']").forEach(element => {
-        element.addEventListener("click", function() {
-            this.blur(); // Usuwa focus z elementu
-        });
-    });
+  document.querySelectorAll("button, a, input[type='submit']").forEach(element => {
+      element.addEventListener("click", function() {
+          this.blur();
+          document.body.classList.add('no-cursor');
+      });
+  });
 });
