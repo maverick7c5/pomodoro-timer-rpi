@@ -24,11 +24,16 @@ body {
   transition: all 0.5s;
 }
 
+/* === CURSOR HIDING === */
+.no-cursor, .no-cursor * {
+  cursor: none !important;
+}
+
 /* === TIMER CONTAINER === */
 .timer-container {
   text-align: center;
   padding: 34px 23px;
-  max-height: 450px;
+  max-height: 550px;
   width: 506px;
   max-width: 506px;
   border-radius: 11px;
@@ -237,7 +242,7 @@ body {
 
 /* === SETTINGS PANEL === */
 .settings-panel {
-  margin-top: 30px;
+  margin-top: 10px;
   display: none;
   flex-direction: row;
   justify-content: center;
@@ -256,7 +261,7 @@ body {
   all: unset;
   background-color: rgba(255, 255, 255, 0.1);
   color: white;
-  padding: 17px 44px;
+  padding: 12px 44px;
   font-size: 1.2rem;
   border-radius: 5px;
   cursor: pointer;
