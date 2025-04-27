@@ -42,7 +42,9 @@ body {
   backdrop-filter: blur(4px);
   border: 2px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 112px;
-  transition: min-height 0.4s ease, padding-bottom 0.4s ease;
+  /* transition: min-height 0.4s ease, padding-bottom 0.4s ease; */
+  min-height: 300px; /* Dodaj minimalną wysokość */
+  transition: all 0.4s ease; /* Rozszerz transition na wszystkie właściwości */
   overflow: hidden;
 }
 
