@@ -26,7 +26,7 @@ class TimerState:
         self.background_image = app.config['DEFAULT_BACKGROUND']
 
     def reset(self):
-        self.remaining_time = 25 * 0.1
+        self.remaining_time = 25 * 60
         self.mode = "pomodoro"
         self.pomodoro_count = 0
         self.running = False
@@ -60,14 +60,23 @@ def start_timer():
                         if state.mode == "pomodoro":
                             state.pomodoro_count += 1
                             state.mode = "long_break" if state.pomodoro_count % 4 == 0 else "short_break"
-                            state.remaining_time = 15 * 0.1 if state.mode == "long_break" else 5 * 0.1
+                            state.remaining_time = 15 * 60 if state.mode == "long_break" else 5 * 60
                         else:
                             state.mode = "pomodoro"
-                            state.remaining_time = 25 * 0.1
+                            state.remaining_time = 25 * 60
                         state.last_update = time.time()
             time.sleep(0.1)
-
+        if not hasattr(state, 'timer_thread') or not state.timer_thread.is_alive():
+            state.timer_thread = threading.Thread(target=timer_worker, daemon=True)
+            state.timer_thread.start()
     threading.Thread(target=run, daemon=True).start()
+
+@app.after_request
+def add_cache_headers(response):
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 # === Routes ===
 @app.route('/')
@@ -104,14 +113,14 @@ def reset():
 def short_break():
     with state.lock:
         state.mode = "short_break"
-        state.remaining_time = 5 * 0.1
+        state.remaining_time = 5 * 60
     return jsonify(status="ok")
 
 @app.route('/switch_to_long_break', methods=['POST'])
 def long_break():
     with state.lock:
         state.mode = "long_break"
-        state.remaining_time = 15 * 0.1
+        state.remaining_time = 15 * 60
     return jsonify(status="ok")
 
 @app.route('/switch_to_pomodoro', methods=['POST'])
@@ -119,7 +128,7 @@ def switch_to_pomodoro():
     with state.lock:
         if state.mode in ["short_break", "long_break"]:
             state.mode = "pomodoro"
-            state.remaining_time = 25 * 0.1
+            state.remaining_time = 25 * 60
             if state.running:
                 state.last_update = time.time()
     return jsonify(status="ok")
@@ -134,15 +143,6 @@ def upload():
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     state.background_image = filename
     return jsonify(success=True, filename=filename)
-
-@app.route('/remove_background', methods=['POST'])
-def remove_background():
-    if state.background_image:
-        path = os.path.join(app.config['UPLOAD_FOLDER'], state.background_image)
-        if os.path.exists(path):
-            os.remove(path)
-        state.background_image = None
-    return jsonify(status="ok")
 
 # === Run App ===
 if __name__ == '__main__':
