@@ -1,331 +1,228 @@
-/* === BASE VARIABLES === */
-:root {
-  --bg-dark: rgba(30, 30, 30, 0.9);
-  --panel-transparency: 0.2;
+// === DOM Elements ===
+const timerDisplay = document.getElementById('timerDisplay');
+const pomodoroCount = document.getElementById('pomodoroCount');
+const body = document.body;
+const settingsPanel = document.getElementById('settingsPanel');
+const backgroundForm = document.getElementById('backgroundForm');
+const backgroundInput = document.getElementById('backgroundInput');
+const uploadBtn = document.getElementById('uploadBtn');
+const browseBtn = document.getElementById('browseBtn');
+const settingsToggle = document.getElementById('settingsToggle');
+const startBtn = document.getElementById('startBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+const resetBtn = document.getElementById('resetBtn');
+const pomodoroBtn = document.getElementById('pomodoroBtn');
+const shortBreakBtn = document.getElementById('shortBreakBtn');
+const longBreakBtn = document.getElementById('longBreakBtn');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+const closeAppBtn = document.getElementById('closeAppBtn');
+const spotifyButton = document.getElementById('spotifyButton');
+
+const pomodoroStartSound = document.getElementById('pomodoroStartSound');
+const shortBreakStartSound = document.getElementById('shortBreakStartSound');
+const longBreakStartSound = document.getElementById('longBreakStartSound');
+const timerStartSound = document.getElementById('timerStartSound');
+
+// === State ===
+let currentMode = 'pomodoro';
+let lastUpdateTime = 0;
+let animationFrameId;
+let completedPomodoros = 0;
+let lastMode = null;
+let isFirstUpdate = true;
+let volume = 0.1;
+
+// === Functions ===
+function playSound(sound) {
+  sound.volume = volume;
+  sound.currentTime = 0;
+  sound.play().catch(console.error);
 }
 
-/* === BODY === */
-body {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 900;
-  font-size: 9px;
-  color: #f0f0f0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  margin: 0;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  overflow: hidden;
-  transition: all 0.5s;
+function updateActiveButton(mode) {
+  [pomodoroBtn, shortBreakBtn, longBreakBtn].forEach(btn => btn.classList.remove('active'));
+  if (mode === 'pomodoro') pomodoroBtn.classList.add('active');
+  if (mode === 'short_break') shortBreakBtn.classList.add('active');
+  if (mode === 'long_break') longBreakBtn.classList.add('active');
 }
 
-/* === CURSOR HIDING === */
-.no-cursor, .no-cursor * {
-  cursor: none !important;
-}
-
-/* === TIMER CONTAINER === */
-.timer-container {
-  text-align: center;
-  padding: 34px 23px;
-  max-height: 550px;
-  width: 506px;
-  max-width: 506px;
-  border-radius: 11px;
-  background-color: rgba(40, 40, 40, var(--panel-transparency));
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 112px;
-  /* transition: min-height 0.4s ease, padding-bottom 0.4s ease; */
-  min-height: 200px;
-  max-height: 95vh; /* Nowe ograniczenie wysokości */
-  overflow-y: auto; /* Dodaj scroll jeśli zawartość przekracza wysokość */
-  transition: min-height 0.4s ease;
-  overflow: hidden;
-}
-
-.timer-container.expanded {
-  padding-bottom: 56px;
-  min-height: 35vh; /* Dynamiczna wysokość zamiast stałej wartości */
-  padding-bottom: 10px;
-}
-
-/* === TIMER DISPLAY === */
-.timer-display {
-  font-size: 7.9rem;
-  font-family: 'Raleway', sans-serif;
-  font-weight: normal;
-  margin: 22px 0;
-  color: white;
-  text-shadow: 1px 3px 6px rgba(0, 0, 0, 1);
-}
-
-/* === MODE SWITCHER === */
-.mode-switcher {
-  display: flex;
-  justify-content: center;
-  gap: 11px;
-  margin-bottom: 22px;
-  flex-wrap: wrap;
-}
-
-.mode-btn {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 900;
-  padding: 13px 21px;
-  border-radius: 9px;
-  border: none;
-  cursor: pointer;
-  font-size: 1.3rem;
-  min-width: 105px;
-  color: white;
-  background-color: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(5px);
-  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.5);
-  transition: background-color 0.3s, color 0.3s, transform 0.3s;
-}
-
-/* Dodane reguły dla kursora */
-.mode-btn:active, .mode-btn:focus {
-  cursor: default;
-  outline: none;
-}
-
-.mode-btn.active {
-  background-color: rgba(255, 255, 255, 0.95);
-  color: black;
-}
-
-.mode-btn:not(.active):hover {
-  background-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-2px);
-}
-
-/* === CONTROLS (START/PAUSE/RESET) === */
-.controls {
-  display: flex;
-  justify-content: center;
-  gap: 11px;
-  margin-bottom: 22px;
-  flex-wrap: wrap;
-}
-
-.controls button {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 900;
-  padding: 12px 27px;
-  border-radius: 15px;
-  border: none;
-  cursor: pointer;
-  font-size: 1.3rem;
-  min-width: 105px;
-  color: black;
-  background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(5px);
-  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.5);
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-/* Dodane reguły dla kursora */
-.controls button:active, .controls button:focus {
-  cursor: default;
-  outline: none;
-}
-
-.controls button:hover {
-  background-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-2px);
-}
-
-/* === FLOATING BUTTONS (Settings, Spotify) === */
-#settingsToggle,
-#spotifyButton {
-  position: fixed;
-  bottom: 30px;
-  width: 65px;
-  height: 65px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  color: white;
-  cursor: pointer;
-  font-size: 2rem;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  transition: background-color 0.3s, transform 0.3s;
-  z-index: 1000;
-}
-
-/* Dodane reguły dla kursora */
-#settingsToggle:active, #settingsToggle:focus,
-#spotifyButton:active, #spotifyButton:focus {
-  cursor: default;
-  outline: none;
-}
-
-#settingsToggle {
-  right: 30px;
-  background-color: rgba(40, 40, 40, 0.3);
-}
-
-#spotifyButton {
-  left: 30px;
-  background-color: rgba(40, 40, 40, 0.3);
-}
-
-/* === TOP RIGHT BUTTONS (Fullscreen, Close App) === */
-.top-right-buttons {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 15px;
-  z-index: 1002;
-}
-
-#fullscreenBtn, #closeAppBtn {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  border: none;
-  background-color: rgba(40, 40, 40, 0.3);
-  color: white;
-  cursor: pointer;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.8rem;
-}
-
-/* Dodane reguły dla kursora */
-#fullscreenBtn:active, #fullscreenBtn:focus,
-#closeAppBtn:active, #closeAppBtn:focus {
-  cursor: default;
-  outline: none;
-}
-
-#fullscreenBtn:hover, #closeAppBtn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
-}
-
-/* === POMODORO COUNT === */
-.pomodoro-count {
-  margin-top: 27px;
-  font-size: 1.0rem;
-  color: #aaa;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px;
-  width: 100%;
-  padding: 0 11px;
-  box-sizing: border-box;
-  justify-content: left;
-}
-
-.pomodoro-cycle {
-  display: flex;
-  gap: 5px;
-  border-radius: 7px;
-  padding: 2px 7px;
-}
-
-.pomodoro-icon {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1rem;
-}
-
-/* === SETTINGS PANEL === */
-.settings-panel {
-  margin-top: 10px;
-  display: none;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 1px;
-  opacity: 1; /* Zawsze widoczny gdy display:flex */
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease, opacity 0.3s ease;
-}
-
-.settings-panel[style*="display: flex"] {
-  max-height: 500px; /* Maksymalna wysokość panelu */
-}
-
-.background-form {
-  display: inline-flex;
-  gap: 20px;
-  justify-content: center;
-  align-items: center;
-}
-
-.background-form button {
-  all: unset;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: white;
-  padding: 12px 44px;
-  font-size: 1.2rem;
-  border-radius: 5px;
-  cursor: pointer;
-  text-align: center;
-  backdrop-filter: blur(5px);
-  transition: background-color 0.3s, transform 0.3s, border-color 0.3s;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-/* Dodane reguły dla kursora */
-.background-form button:active, .background-form button:focus {
-  cursor: default;
-  outline: none;
-}
-
-.background-form button:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-  transform: scale(1.05);
-}
-
-.background-form input[type="file"] {
-  display: none;
-}
-
-/* === MEDIA QUERIES === 
-@media (max-width: 768px) {
-  .timer-container { width: 380px; max-width: 405px; padding: 22px; margin-bottom: 56px; }
-  .timer-display { font-size: 5.6rem; }
-  .controls button { padding: 10px 22px; min-width: 100px; font-size: 1.1rem; }
-}
-
-@media (max-width: 576px) {
-  .timer-container { width: 380px; padding: 17px; margin-bottom: 45px; }
-  .timer-display { font-size: 3.9rem; }
-  .mode-btn { padding: 11px 15px; min-width: 90px; font-size: 1.1rem; }
-  .controls button { padding: 10px 15px; min-width: 90px; font-size: 1.1rem; }
-}*/
-
-@media (max-width: 768px) and (max-height: 600px) {
-  .timer-container {
-    width: 90% !important;
-    margin-bottom: 20px;
-    min-height: 60vh;
+function updatePomodoroCount(count) {
+  pomodoroCount.innerHTML = '';
+  const totalCycles = Math.ceil(count / 4);
+  for (let cycle = 0; cycle < totalCycles; cycle++) {
+    const cycleContainer = document.createElement('div');
+    cycleContainer.className = 'pomodoro-cycle';
+    const sessionsInCycle = Math.min(4, count - (cycle * 4));
+    for (let i = 0; i < sessionsInCycle; i++) {
+      const icon = document.createElement('i');
+      icon.className = 'fas fa-check-circle pomodoro-icon';
+      cycleContainer.appendChild(icon);
+    }
+    pomodoroCount.appendChild(cycleContainer);
   }
+}
+
+function updateDisplay(seconds, mode, count, bgImage) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+  if (mode !== currentMode || isFirstUpdate) {
+    if (!isFirstUpdate && currentMode) {
+      if (currentMode === 'pomodoro') playSound(pomodoroStartSound);
+      if (currentMode === 'short_break') playSound(shortBreakStartSound);
+      if (currentMode === 'long_break') playSound(longBreakStartSound);
+    }
+    lastMode = currentMode;
+    currentMode = mode;
+    updateActiveButton(mode);
+    body.className = `${mode.replace('_', '-')}-mode`;
+    isFirstUpdate = false;
+  }
+
+  updatePomodoroCount(count);
+
+  body.style.backgroundImage = bgImage
+    ? `url('/static/uploads/${bgImage}')`
+    : "url('/static/default_backgrounds/default_bg.jpg')";
+}
+
+async function fetchStatus() {
+  try {
+    const response = await fetch('/status');
+    if (!response.ok) throw new Error('Network error');
+    const data = await response.json();
+    completedPomodoros = data.pomodoro_count;
+    updateDisplay(data.remaining_time, data.current_mode, completedPomodoros, data.background_image);
+  } catch (error) {
+    console.error('Error fetching status:', error);
+  }
+}
+
+function smoothUpdate() {
+  const now = Date.now();
+  if (now - lastUpdateTime >= 1000) {
+    fetchStatus();
+    lastUpdateTime = now;
+  }
+  animationFrameId = requestAnimationFrame(smoothUpdate);
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+    fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+  } else {
+    document.exitFullscreen();
+    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+  }
+}
+
+function closeApp() {
+  if (window.confirm('Czy na pewno chcesz zamknąć aplikację?')) {
+    window.close();
+  }
+}
+
+// === Event Listeners ===
+startBtn.onclick = async () => {
+  try {
+    timerStartSound.volume = volume;
+    await timerStartSound.play();
+    timerStartSound.pause();
+  } catch {}
+  const res = await fetch('/start');
+  if (res.ok) playSound(timerStartSound);
+};
+
+pauseBtn.onclick = () => fetch('/pause').catch(console.error);
+resetBtn.onclick = () => fetch('/reset').catch(console.error);
+
+pomodoroBtn.onclick = async () => {
+  const status = await fetch('/status').then(res => res.json());
+  if (['short_break', 'long_break'].includes(status.current_mode)) {
+    await fetch('/switch_to_pomodoro', { method: 'POST' });
+    await fetch('/start', { method: 'POST' });
+    fetchStatus();
+  }
+};
+
+shortBreakBtn.onclick = () => fetch('/switch_to_short_break', { method: 'POST' }).then(fetchStatus);
+longBreakBtn.onclick = () => fetch('/switch_to_long_break', { method: 'POST' }).then(fetchStatus);
+
+settingsToggle.onclick = () => {
+  const container = document.querySelector('.timer-container');
+  const isExpanded = container.classList.contains('expanded');
   
-  .timer-container.expanded {
-    min-height: 80vh;
+  if(!isExpanded) {
+    container.classList.add('expanded');
+    settingsPanel.style.display = 'flex';
+    setTimeout(() => {
+      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+    }, 400);
+  } else {
+    settingsPanel.style.display = 'none';
+    container.classList.remove('expanded');
   }
-  
-  .settings-panel[style*="display: flex"] {
-    max-height: 100px;
+};
+
+browseBtn.onclick = () => backgroundInput.click();
+
+backgroundForm.onsubmit = async (e) => {
+  e.preventDefault();
+  const file = backgroundInput.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('background', file);
+
+  try {
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = 'Uploading...';
+
+    const response = await fetch('/upload', { method: 'POST', body: formData });
+    if (!response.ok) throw new Error('Upload failed');
+
+    fetchStatus();
+  } catch (error) {
+    console.error(error.message);
+  } finally {
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = 'Upload';
   }
-}
+};
+
+fullscreenBtn.addEventListener('click', toggleFullscreen);
+closeAppBtn.addEventListener('click', closeApp);
+
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) {
+    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+  }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  const savedVolume = localStorage.getItem('pomodoroVolume');
+  if (savedVolume) {
+    volume = parseFloat(savedVolume);
+  }
+  smoothUpdate();
+  fetchStatus();
+});
+
+window.addEventListener('beforeunload', () => {
+  cancelAnimationFrame(animationFrameId);
+});
+
+spotifyButton.onclick = () => {
+  window.open('https://open.spotify.com/playlist/0Ec6DatLDguXsx4UDntZbw', '_blank');
+};
+
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll("button, a, input[type='submit']").forEach(element => {
+      element.addEventListener("click", function() {
+          this.blur();
+          document.body.classList.add('no-cursor');
+      });
+  });
+});
