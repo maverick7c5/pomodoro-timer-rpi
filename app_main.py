@@ -147,4 +147,4 @@ def remove_background():
 # === Run App ===
 if __name__ == '__main__':
     print("Pomodoro timer running...")
-    app.run(debug=True)
+    # app.run(debug=True)
