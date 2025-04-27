@@ -206,3 +206,11 @@ window.addEventListener('beforeunload', () => {
 spotifyButton.onclick = () => {
   window.open('https://open.spotify.com/playlist/0Ec6DatLDguXsx4UDntZbw', '_blank');
 };
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll("button, a, input[type='submit']").forEach(element => {
+        element.addEventListener("click", function() {
+            this.blur(); // Usuwa focus z elementu
+        });
+    });
+});
