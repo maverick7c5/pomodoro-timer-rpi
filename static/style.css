@@ -25,6 +25,11 @@ body {
 }
 
 /* === CURSOR HIDING === */
+body.no-cursor,
+body.no-cursor button,
+body.no-cursor a,
+body.no-cursor input,
+body.no-cursor .mode-btn,
 .no-cursor, .no-cursor * {
   cursor: none !important;
 }
