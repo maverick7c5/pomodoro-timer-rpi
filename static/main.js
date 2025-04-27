@@ -31,6 +31,7 @@ let completedPomodoros = 0;
 let lastMode = null;
 let isFirstUpdate = true;
 let volume = 0.1;
+let updateInterval;
 
 // === Functions ===
 function playSound(sound) {
@@ -151,19 +152,13 @@ shortBreakBtn.onclick = () => fetch('/switch_to_short_break', { method: 'POST' }
 longBreakBtn.onclick = () => fetch('/switch_to_long_break', { method: 'POST' }).then(fetchStatus);
 
 settingsToggle.onclick = () => {
-  const container = document.querySelector('.timer-container');
-  const isExpanded = container.classList.contains('expanded');
+  const isExpanded = settingsPanel.style.display === 'flex';
+  settingsPanel.style.display = isExpanded ? 'none' : 'flex';
   
-  if(!isExpanded) {
-    container.classList.add('expanded');
-    settingsPanel.style.display = 'flex';
-    setTimeout(() => {
-      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-    }, 400);
-  } else {
-    settingsPanel.style.display = 'none';
-    container.classList.remove('expanded');
-  }
+  // Wymuś przepływ animacji
+  requestAnimationFrame(() => {
+    document.querySelector('.timer-container').classList.toggle('expanded');
+  });
 };
 
 browseBtn.onclick = () => backgroundInput.click();
@@ -226,3 +221,6 @@ document.addEventListener("DOMContentLoaded", function() {
       });
   });
 });
+
+console.time('AppLoad');
+window.addEventListener('load', () => console.timeEnd('AppLoad'));
