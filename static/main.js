@@ -151,8 +151,13 @@ shortBreakBtn.onclick = () => fetch('/switch_to_short_break', { method: 'POST' }
 longBreakBtn.onclick = () => fetch('/switch_to_long_break', { method: 'POST' }).then(fetchStatus);
 
 settingsToggle.onclick = () => {
-  settingsPanel.style.display = (settingsPanel.style.display === 'flex') ? 'none' : 'flex';
-  document.querySelector('.timer-container').classList.toggle('expanded');
+  const isExpanded = settingsPanel.style.display === 'flex';
+  settingsPanel.style.display = isExpanded ? 'none' : 'flex';
+  
+  // Wymuś przepływ animacji
+  requestAnimationFrame(() => {
+    document.querySelector('.timer-container').classList.toggle('expanded');
+  });
 };
 
 browseBtn.onclick = () => backgroundInput.click();
