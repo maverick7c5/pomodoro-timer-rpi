@@ -80,6 +80,12 @@ body {
   transition: background-color 0.3s, color 0.3s, transform 0.3s;
 }
 
+/* Dodane reguły dla kursora */
+.mode-btn:active, .mode-btn:focus {
+  cursor: default;
+  outline: none;
+}
+
 .mode-btn.active {
   background-color: rgba(255, 255, 255, 0.95);
   color: black;
@@ -115,6 +121,12 @@ body {
   transition: background-color 0.3s, transform 0.3s;
 }
 
+/* Dodane reguły dla kursora */
+.controls button:active, .controls button:focus {
+  cursor: default;
+  outline: none;
+}
+
 .controls button:hover {
   background-color: rgba(255, 255, 255, 0.4);
   transform: translateY(-2px);
@@ -139,6 +151,13 @@ body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   transition: background-color 0.3s, transform 0.3s;
   z-index: 1000;
+}
+
+/* Dodane reguły dla kursora */
+#settingsToggle:active, #settingsToggle:focus,
+#spotifyButton:active, #spotifyButton:focus {
+  cursor: default;
+  outline: none;
 }
 
 #settingsToggle {
@@ -178,6 +197,13 @@ body {
   font-size: 1.8rem;
 }
 
+/* Dodane reguły dla kursora */
+#fullscreenBtn:active, #fullscreenBtn:focus,
+#closeAppBtn:active, #closeAppBtn:focus {
+  cursor: default;
+  outline: none;
+}
+
 #fullscreenBtn:hover, #closeAppBtn:hover {
   background-color: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
@@ -194,7 +220,7 @@ body {
   width: 100%;
   padding: 0 11px;
   box-sizing: border-box;
-  justify-content: center;
+  justify-content: left;
 }
 
 .pomodoro-cycle {
@@ -211,33 +237,39 @@ body {
 
 /* === SETTINGS PANEL === */
 .settings-panel {
-  margin-top: 17px;
+  margin-top: 30px;
   display: none;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 1px;
 }
 
 .background-form {
   display: inline-flex;
-  gap: 8px;
+  gap: 20px;
   justify-content: center;
   align-items: center;
 }
 
 .background-form button {
   all: unset;
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.1);
   color: white;
-  padding: 7px 14px;
-  font-size: 0.9rem;
+  padding: 17px 44px;
+  font-size: 1.2rem;
   border-radius: 5px;
   cursor: pointer;
   text-align: center;
   backdrop-filter: blur(5px);
   transition: background-color 0.3s, transform 0.3s, border-color 0.3s;
   border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Dodane reguły dla kursora */
+.background-form button:active, .background-form button:focus {
+  cursor: default;
+  outline: none;
 }
 
 .background-form button:hover {
