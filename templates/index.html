@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Focus Timer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="pomodoro-mode">
+
+  <div class="top-right-buttons">
+    <button id="fullscreenBtn" title="Pełny ekran"><i class="fas fa-expand"></i></button>
+    <button id="closeAppBtn" title="Zamknij"><i class="fas fa-power-off"></i></button>
+  </div>
+
+  <div class="timer-container">
+    <div class="mode-switcher">
+      <button class="mode-btn active" id="pomodoroBtn">Working</button>
+      <button class="mode-btn" id="shortBreakBtn">Short Break</button>
+      <button class="mode-btn" id="longBreakBtn">Long Break</button>
+    </div>
+
+    <div class="timer-display" id="timerDisplay">25:00</div>
+
+    <div class="controls">
+      <button id="startBtn">Start</button>
+      <button id="pauseBtn">Pause</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+
+    <div class="pomodoro-count" id="pomodoroCount"></div>
+
+    <!-- Minimalistyczny SETTINGS PANEL -->
+    <div class="settings-panel" id="settingsPanel">
+      <form id="backgroundForm" class="background-form">
+        <button type="button" id="browseBtn">Browse</button>
+        <input type="file" name="background" id="backgroundInput" accept="image/*">
+        <button type="submit" id="uploadBtn">Upload</button>
+      </form>
+    </div>
+
+  </div>
+
+  <button id="spotifyButton" title="Spotify"><i class="fab fa-spotify"></i></button>
+
+  <button id="settingsToggle" title="Settings"><i class="fas fa-cog"></i></button>
+
+  <!-- Sounds -->
+  <audio id="pomodoroStartSound" preload="auto">
+    <source src="/static/sounds/double_bell.wav" type="audio/wav">
+  </audio>
+  <audio id="shortBreakStartSound" preload="auto">
+    <source src="/static/sounds/double_bell.wav" type="audio/wav">
+  </audio>
+  <audio id="longBreakStartSound" preload="auto">
+    <source src="/static/sounds/double_bell.wav" type="audio/wav">
+  </audio>
+  <audio id="timerStartSound" preload="auto">
+    <source src="/static/sounds/double_bell.wav" type="audio/wav">
+  </audio>
+
+  <script src="/static/main.js"></script>
+</body>
+</html>
