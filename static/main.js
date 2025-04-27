@@ -197,6 +197,7 @@ document.addEventListener('fullscreenchange', () => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
+  setupCursorHiding();
   const savedVolume = localStorage.getItem('pomodoroVolume');
   if (savedVolume) {
     volume = parseFloat(savedVolume);
@@ -213,8 +214,9 @@ spotifyButton.onclick = () => {
   window.open('https://open.spotify.com/playlist/0Ec6DatLDguXsx4UDntZbw', '_blank');
 };
 
+// W pliku main.js, zmień ostatnią część kodu:
 document.addEventListener("DOMContentLoaded", function() {
-  document.querySelectorAll("button, a, input[type='submit']").forEach(element => {
+  document.querySelectorAll("button, a, input[type='submit'], .mode-btn, .controls button").forEach(element => {
       element.addEventListener("click", function() {
           this.blur();
           document.body.classList.add('no-cursor');
@@ -224,3 +226,31 @@ document.addEventListener("DOMContentLoaded", function() {
 
 console.time('AppLoad');
 window.addEventListener('load', () => console.timeEnd('AppLoad'));
+
+// Zmieniamy nasłuchiwanie dla przycisków trybu
+function setupCursorHiding() {
+  const hideCursor = (e) => {
+    e.target.blur();
+    document.body.classList.add('no-cursor');
+  };
+
+  // Obsługa dla przycisków trybu
+  [pomodoroBtn, shortBreakBtn, longBreakBtn].forEach(btn => {
+    btn.addEventListener('click', hideCursor, { capture: true }); // Używamy capture phase
+  });
+
+  // Obsługa dla pozostałych przycisków
+  document.querySelectorAll("button:not(.mode-btn), a, input[type='submit']").forEach(element => {
+    element.addEventListener('click', hideCursor);
+  });
+}
+
+function hideCursor() {
+  setTimeout(() => {
+    document.body.classList.add('no-cursor');
+  }, 50); // Krótkie opóźnienie 50ms
+}
+
+pomodoroBtn.addEventListener('click', hideCursor);
+shortBreakBtn.addEventListener('click', hideCursor);
+longBreakBtn.addEventListener('click', hideCursor);
